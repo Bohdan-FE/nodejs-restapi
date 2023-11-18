@@ -1,9 +1,9 @@
 import app from './app.js'
 import mongoose from 'mongoose'
 
-const { DB_HOSt }  = process.env
+const { DB_HOST } = process.env
 
-mongoose.connect(DB_HOSt)
+mongoose.connect(DB_HOST)
   .then(() => {
     console.log('Database connection successful')
     app.listen(3000, () => {
