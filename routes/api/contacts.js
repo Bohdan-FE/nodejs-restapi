@@ -2,7 +2,7 @@ import express from 'express'
 import contactsController from '../../controllers/contacts-controller.js'
 import { isEmptyBody, isValidId } from '../../middlewares/index.js'
 import { validateBody } from '../../decorators/index.js'
-import { contactAddSchema, contactFavoriteSchema, contactUpdateSchema } from '../../schemas/contact-schemas.js'
+import { contactAddSchema, contactFavoriteSchema, contactUpdateSchema } from '../../models/Contact.js'
 
 const router = express.Router()
 
