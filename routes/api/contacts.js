@@ -1,19 +1,21 @@
 import express from 'express'
 import contactsController from '../../controllers/contacts-controller.js'
-import { isEmptyBody } from '../../middlewares/index.js'
+import { isEmptyBody, isValidId } from '../../middlewares/index.js'
 import { validateBody } from '../../decorators/index.js'
-import { contactAddScheme, contactUpdateScheme } from '../../schemas/contact-schemas.js'
+import { contactAddSchema, contactFavoriteSchema, contactUpdateSchema } from '../../schemas/contact-schemas.js'
 
 const router = express.Router()
 
 router.get('/', contactsController.getAllContacts)
 
-router.get('/:contactId', contactsController.getById)
+router.get('/:contactId', isValidId, contactsController.getById)
 
-router.post('/', isEmptyBody, validateBody(contactAddScheme), contactsController.add)
+router.post('/', isEmptyBody,  validateBody(contactAddSchema), contactsController.add)
 
-router.put('/:contactId', isEmptyBody, validateBody(contactUpdateScheme), contactsController.updateById)
+router.put('/:contactId', isValidId, isEmptyBody, validateBody(contactUpdateSchema), contactsController.updateById)
 
-router.delete('/:contactId', contactsController.deleteById)
+router.patch('/:contactId/favorite', isValidId, isEmptyBody, validateBody(contactFavoriteSchema), contactsController.updateStatusContact)
+
+router.delete('/:contactId', isValidId, contactsController.deleteById)
 
 export default router
