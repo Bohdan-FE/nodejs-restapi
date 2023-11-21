@@ -9,8 +9,7 @@ const getAllContacts = async (req, res) => {
         const skip = (page - 1) * limit
         const query = { owner };
          if (favorite !== undefined) {
-                 query.favorite = favorite;
-                 
+                 query.favorite = favorite;     
                 }
         const result = await Contact.find(query, '-createdAt -updatedAt -owner', { skip, limit })
         const totalContacts = await Contact.countDocuments(query)
