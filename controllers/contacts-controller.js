@@ -13,7 +13,7 @@ const getAllContacts = async (req, res) => {
                  
                 }
         const result = await Contact.find(query, '-createdAt -updatedAt -owner', { skip, limit })
-        const totalContacts = await Contact.countDocuments({owner})
+        const totalContacts = await Contact.countDocuments(query)
         res.json({
                 contacts: result,
                 owner: {_id: owner, email, subscription},
