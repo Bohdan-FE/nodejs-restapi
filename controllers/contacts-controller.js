@@ -5,9 +5,14 @@ import Contact from '../models/Contact.js'
 
 const getAllContacts = async (req, res) => {
         const { _id: owner, email, subscription } = req.user 
-        const { page = 1, limit = 10 } = req.query
-        const skip = (page -1 ) * limit
-        const result = await Contact.find({ owner }, '-createdAt -updatedAt -owner', { skip, limit })
+        const { page = 1, limit = 10, favorite } = req.query
+        const skip = (page - 1) * limit
+        const query = { owner };
+         if (favorite !== undefined) {
+                 query.favorite = favorite;
+                 
+                }
+        const result = await Contact.find(query, '-createdAt -updatedAt -owner', { skip, limit })
         const totalContacts = await Contact.countDocuments({owner})
         res.json({
                 contacts: result,
