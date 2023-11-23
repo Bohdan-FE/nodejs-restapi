@@ -5,6 +5,7 @@ import User from '../models/User.js'
 import jwt from 'jsonwebtoken'
 import gravatar from 'gravatar'
 import path from 'path'
+import Jimp from "jimp"
 import fs from 'fs/promises'
 
 const avatarDir = path.resolve('public', 'avatars')
@@ -62,11 +63,16 @@ const logout = async (req, res) => {
 }
 
 const updateAvatar = async (req, res) => {
-    const {_id} = req.user
+    const { _id } = req.user
     const { path: tempUpload, originalname } = req.file
-    const resultUpload = path.join(avatarDir, originalname)
-    await fs.rename(tempUpload, resultUpload)
     const newFileName = `${_id}_${originalname}`
+    const resultUpload = path.join(avatarDir, newFileName)
+
+    await fs.rename(tempUpload, resultUpload)
+
+    const file = await Jimp.read(resultUpload);
+    file.resize(250, 250).write(resultUpload)
+  
     const avatarURL = path.join('avatars', newFileName)
     await User.findByIdAndUpdate(_id, { avatarURL })
     res.json({
