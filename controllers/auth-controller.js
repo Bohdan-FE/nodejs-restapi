@@ -3,6 +3,12 @@ import { ctrlWrapper } from '../decorators/index.js'
 import bcrypt from 'bcrypt'
 import User from '../models/User.js'
 import jwt from 'jsonwebtoken'
+import gravatar from 'gravatar'
+import path from 'path'
+import Jimp from "jimp"
+import fs from 'fs/promises'
+
+const avatarDir = path.resolve('public', 'avatars')
 
 const register = async (req, res) => {
     const { email, password } = req.body
@@ -11,9 +17,10 @@ const register = async (req, res) => {
         throw HttpError(409, 'Email is already in use')
     }
     const hashPassword = await bcrypt.hash(password, 10)
+    const avatarURL = gravatar.url(email)
     const newUser = await User.create({ ...req.body, password: hashPassword })
     res.status(201).json({
-        user: {email: newUser.email, subscription: newUser.subscription}
+        user: {email: newUser.email, subscription: newUser.subscription, avatarURL}
     })
 }
 
@@ -55,9 +62,28 @@ const logout = async (req, res) => {
     res.status(204).json()
 }
 
+const updateAvatar = async (req, res) => {
+    const { _id } = req.user
+    const { path: tempUpload, originalname } = req.file
+    const newFileName = `${_id}_${originalname}`
+    const resultUpload = path.join(avatarDir, newFileName)
+
+    const file = await Jimp.read(tempUpload)
+    await file.resize(250, 250).writeAsync(tempUpload)
+    
+    await fs.rename(tempUpload, resultUpload)
+    
+    const avatarURL = path.join('avatars', newFileName)
+    await User.findByIdAndUpdate(_id, { avatarURL })
+    res.json({
+        avatarURL
+    })
+}
+
 export default {
     register: ctrlWrapper(register),
     login: ctrlWrapper(login),
     getCurrent: ctrlWrapper(getCurrent),
-    logout: ctrlWrapper(logout)
+    logout: ctrlWrapper(logout),
+    updateAvatar: ctrlWrapper(updateAvatar)
 }

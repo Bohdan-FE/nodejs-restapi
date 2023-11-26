@@ -21,7 +21,8 @@ const userSchema = new Schema({
     enum: subscriptionsList,
     default: "starter"
   },
-  token: String
+  token: String,
+  avatarURL: String,
 }, { versionKey: false, timestamps: true })
 
 userSchema.post('save', handleSaveError)
